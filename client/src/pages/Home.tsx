@@ -79,6 +79,7 @@ export default function Home() {
   const [selectedPlan, setSelectedPlan] = useState("balanced");
   const [message, setMessage] = useState("I'm holding $5,240 of ETH. I'm worried it could dump tonight. Don't risk more than $80 protecting me.");
   const [isFinding, setIsFinding] = useState(false);
+  const hasIntent = message.trim().length > 0;
 
   const handlePlaceholder = (label: string) => {
     toast(`${label} is part of the forthcoming product experience.`, {
@@ -151,8 +152,8 @@ export default function Home() {
               </div>
               <h2 id="composer-heading">What are you worried about?</h2>
               <label className="sr-only" htmlFor="intent">Describe your exposure and concern</label>
-              <textarea id="intent" value={message} onChange={(event) => setMessage(event.target.value)} aria-describedby="intent-note" />
-              <p className="field-note" id="intent-note"><CircleHelp size={13} /> Say what you hold, what worries you, and your maximum budget.</p>
+              <textarea id="intent" value={message} onChange={(event) => setMessage(event.target.value)} aria-describedby="intent-note" aria-required="true" aria-invalid={!hasIntent} />
+              <p className={`field-note ${!hasIntent ? "field-note-error" : ""}`} id="intent-note" aria-live="polite"><CircleHelp size={13} /> {hasIntent ? "Say what you hold, what worries you, and your maximum budget." : "Tell us what you hold and what worries you before finding protection."}</p>
               <div className="interpretation-header"><span>We heard</span><span>Preview only · no wallet required</span></div>
               <dl className="interpretation-grid">
                 <div><dt>ETH exposure</dt><dd>$5,240</dd></div>
@@ -160,7 +161,7 @@ export default function Home() {
                 <div><dt>Maximum budget</dt><dd>$80</dd></div>
                 <div><dt>Protection window</dt><dd>1 hour</dd></div>
               </dl>
-              <button className="button button-primary composer-button" type="button" onClick={handleFindProtection} disabled={isFinding}>
+              <button className="button button-primary composer-button" type="button" onClick={handleFindProtection} disabled={isFinding || !hasIntent}>
                 {isFinding ? <><span className="button-loader" /> Reviewing inputs</> : <>Find protection <ArrowRight size={17} /></>}
               </button>
             </section>

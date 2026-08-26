@@ -38,8 +38,34 @@ The 1024px full-page capture was reviewed: the hero, header, intent composer, an
 ## Final validation follow-up
 
 - [x] Explicitly verify `document.documentElement.scrollWidth <= window.innerWidth` at 320px, 375px, 390px, 430px, 768px, 1024px, 1280px, and 1440px and document the results.
-- [ ] Save a new checkpoint for the approved implementation after final validation and deliver it to the user.
+- [x] Save a new checkpoint for the approved implementation after final validation and deliver it to the user.
 
 ## Approved implementation validation evidence
 
 The rendered same-origin probe measured the document at all requested widths. Results were: 320px → scrollWidth 320px; 375px → 360px; 390px → 375px; 430px → 415px; 768px → 753px; 1024px → 1009px; 1280px → 1265px; and 1440px → 1425px. Every result was `scrollWidth <= innerWidth`, confirming zero document-level horizontal overflow at each requested viewport.
+
+## Pasted refinement pass
+
+- [x] Read pasted_content.txt completely and convert its instructions into concrete frontend changes.
+- [x] Apply responsive fixes, typography upgrades, mobile corrections, product-emphasis improvements, interaction states, and accessibility improvements without changing the approved design direction.
+- [x] Visually inspect every viewport requested in pasted_content.txt and verify zero document-level horizontal overflow.
+- [x] Run tests and production checks, save a checkpoint, and report the exact changes.
+
+## Pasted refinement QA evidence
+
+The lifecycle is now intentionally vertical on small screens: User exposure, CUSHION engine, DreamDEX contract, and Somnia settlement are separate readable modules connected by rotated cyan progression arrows. The rendered QA probe confirmed zero document-level horizontal overflow at 320, 375, 390, 430, 768, 1024, 1280, and 1440px. The empty composer state reports `aria-invalid=true` and disables the Find protection action; mobile navigation opens with How it works, Protection, Developers, Roadmap, and Build my Cushion, then closes cleanly.
+
+## Refinement follow-up
+
+- [x] Apply an explicit editorial/display font pairing while keeping product and financial UI typography highly legible.
+- [x] Strengthen the intent composer’s visual priority through measured hero composition and instrument hierarchy changes without adding more cards.
+- [x] Re-audit the hero and protection-plan relationship after the typography and product-emphasis changes.
+
+## Final audit evidence follow-up
+
+- [x] Re-audit the hero and protection-plan relationship after the Newsreader/composer-emphasis changes, record the outcome explicitly, and fix any hierarchy or balance issues found.
+- [x] Document the post-refinement visual QA outcomes for the 1024px, 1280px, and 1440px hero/plan views.
+
+## Final hero/plan audit outcome
+
+At 1024px, the Newsreader editorial headline remains legible beside the enlarged composer, and the protection-plan comparison remains readable without competing with the primary input object. At 1280px, the composer has clear visual priority through its larger surface, stronger perimeter, and right-weighted hero column while the plan selector retains a calm secondary rhythm. At 1440px, the hero-to-plan relationship is balanced: the composer is the memorable product object, and the plan rows act as the next decision surface rather than a competing card grid. No hierarchy, clipping, or balance issue was found that required an additional visual change.
