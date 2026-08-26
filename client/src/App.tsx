@@ -1,4 +1,4 @@
-/** Signal Room direction: keep the app shell in its intentional midnight theme. */
+/** Light-first CUSHION direction: keep the app shell aligned with the warm-white financial interface. */
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
@@ -20,9 +20,9 @@ function Router() {
 export default function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="dark">
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
-          <Toaster theme="dark" position="bottom-right" richColors closeButton />
+          <Toaster theme="light" position="bottom-right" richColors closeButton />
           <Router />
         </TooltipProvider>
       </ThemeProvider>

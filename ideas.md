@@ -82,3 +82,9 @@ The wordmark uses Manrope’s sturdy geometric forms with a separated, custom **
 The landing experience will remain interface-led. Generated imagery is used only as a subtle, original background texture and branded mark support; it will not substitute for the actual product interaction or dilute the financial clarity of the page.
 
 The signal spine is a continuous authored instrument trace: each major desktop section attaches to a labeled trace, tick, or node rather than reading as a detached horizontal band. The Cushion glyph recurs as a low-opacity segmented orbital detail in selected product states and monitoring surfaces. Cushion Cyan remains semantic—active intent, selected protection, signal flow, and primary action—while ambient decoration remains navy glass and blue-gray measurement detail.
+
+## Active Revision — Premium Light-First Financial Interface
+
+The active direction supersedes the original dark Signal Room emphasis. CUSHION now uses a warm-white or very light neutral canvas, crisp charcoal typography, cool-gray surfaces, thin borders, and restrained shadows. The cyan/blue accent is reserved for protection intent, primary actions, signal flow, and selected states. Green appears only for protected or successful states; coral appears only for downside/risk. The material language is deliberately closer to wealth-management software than a trading terminal: contained instrument surfaces are bright and legible, while the page avoids dark crypto styling, excessive gradients, glassmorphism, neon effects, and oversized glowing cards.
+
+The product interaction remains the focal point, but the composer is now a precise white instrument panel on a warm canvas rather than a dark glass module. Editorial sections use generous whitespace and stronger charcoal hierarchy; plan cards are crisp, low-radius comparison rows; and the signal spine is expressed through light blue-gray trace lines and restrained cyan nodes.
