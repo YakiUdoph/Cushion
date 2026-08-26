@@ -69,3 +69,15 @@ The lifecycle is now intentionally vertical on small screens: User exposure, CUS
 ## Final hero/plan audit outcome
 
 At 1024px, the Newsreader editorial headline remains legible beside the enlarged composer, and the protection-plan comparison remains readable without competing with the primary input object. At 1280px, the composer has clear visual priority through its larger surface, stronger perimeter, and right-weighted hero column while the plan selector retains a calm secondary rhythm. At 1440px, the hero-to-plan relationship is balanced: the composer is the memorable product object, and the plan rows act as the next decision surface rather than a competing card grid. No hierarchy, clipping, or balance issue was found that required an additional visual change.
+
+## Final frozen visual polish pass
+
+- [x] Slightly strengthen the intent composer and protection-plan visual emphasis without changing typography or adding new UI.
+- [x] Tighten mobile vertical spacing while preserving editorial breathing room.
+- [x] Refine the light-to-dark footer transition without adding gradients or new sections.
+- [x] Visually inspect 320px, 375px, 390px, 430px, 768px, 1024px, 1280px, and 1440px and verify zero document-level horizontal overflow.
+- [ ] Save the final frozen polish checkpoint and report only exact polish changes and tested viewport sizes.
+
+## Final frozen polish evidence
+
+The polish pass kept the approved font system unchanged. It slightly increased composer visual weight with a measured desktop lift and a restrained shadow/perimeter refinement, strengthened the selected protection-plan rail and elevation, compressed mobile section padding and inter-section gaps without removing editorial breathing room, and added a thin cyan boundary between the light final CTA and dark footer. Rendered visual QA was completed at 320px, 375px, 390px, 430px, 768px, 1024px, 1280px, and 1440px. The same-origin overflow probe returned `scrollWidth <= innerWidth` at every width. Vitest passed 2 tests, TypeScript passed, and the production build completed successfully.
