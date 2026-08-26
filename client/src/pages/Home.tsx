@@ -1,6 +1,6 @@
 /**
- * Signal Room direction: an interface-led premium finance landing page.
- * Deep navy surfaces, Cushion Cyan protection signals, Manrope hierarchy, and a calm editorial signal spine.
+ * Approved CUSHION light-first direction: editorial negative space, restrained instrument containers,
+ * hairline structure, and the intent composer as the primary product object.
  */
 import { useState } from "react";
 import {

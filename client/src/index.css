@@ -21,6 +21,24 @@
 }
 
 :root {
+  /* Approved CUSHION design-contract aliases */
+  --color-canvas: #f7f9fa;
+  --color-canvas-warm: #fbfcfc;
+  --color-surface: #ffffff;
+  --color-surface-cool: #f0f4f5;
+  --color-surface-raised: #e8eff1;
+  --color-ink: #18252d;
+  --color-ink-soft: #425760;
+  --color-ink-muted: #71838a;
+  --color-line: #dce5e8;
+  --color-line-strong: #c1d1d6;
+  --color-protection: #1599b4;
+  --color-protection-soft: #e0f6f9;
+  --color-protection-cta: #55cfe5;
+  --color-success: #1c9b64;
+  --color-success-soft: #e6f6ef;
+  --color-risk: #c24c55;
+  --color-risk-soft: #fff0f1;
   --background: #f7f9fa;
   --foreground: #18252d;
   --card: #ffffff;
@@ -48,6 +66,7 @@
   --radius-control: 9px;
   --radius-panel: 14px;
   --radius-hero: 18px;
+  --shadow-instrument: 0 12px 30px rgba(36, 69, 79, 0.08);
   --ease-out: cubic-bezier(.23, 1, .32, 1);
 }
 
