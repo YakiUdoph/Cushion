@@ -4,6 +4,8 @@ Record every incorrect assumption, documentation mismatch, unexpected SDK/API be
 
 Phase 0.5C corrections and discoveries:
 
+- Phase 0.6 settlement completion: exact market `0x...9a4f` finalized and resolved to YES from authoritative payout vector `[10000000,0]` with denominator `10000000`; it was not voided and the frozen settlement fee was `0` bps. The wallet retained `1000` raw losing NO, had no claimable outcome, and its calculated payout was `0` raw tUSDC. No zero-value redemption was constructed or broadcast. This proves the losing settlement path, while a winning/void redemption and collateral delta remain separately unverified.
+
 - Phase 0.5H settlement tracking: market `0x...9a4f` remained Trading, unfinalized, unresolved, and non-voided with `24731` seconds to expiry. Wallet NO ownership remained `1000` raw and nothing was claimable. The on-chain helper's `winningOutcome=0` is an empty-vector default while unresolved, not evidence of a YES winner; gate winner display on resolved/voided state.
 
 - Phase 0.5G execution proof: exact approved transaction `0xe6641626c5183747e1fe03ae72cca4925f5ca72e6fbdea141822cc8c8d157412` fully filled `1000` raw BUY_NO at effective NO `0.802000`, spent `802` raw tUSDC, and increased the wallet's NO balance by `1000`. DreamDEX `BinaryOrderPlaced`, `OrderFilled`, and `OrderPlaced` logs verified the native path. Finalization/redemption remain pending.

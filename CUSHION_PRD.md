@@ -3,7 +3,7 @@
 **Version:** 1.0
 **Status:** Canonical product source of truth; Phase 1 not started
 **Last updated:** 2026-08-26
-**Foundation status:** Sponsor-native execution proven on Somnia Shannon; natural finalization and redemption pending
+**Foundation status:** Phase 0 closed at `GREEN_FULL_LIFECYCLE_PROVEN`; the owned-position losing settlement path is proven, while a winning redemption broadcast remains unverified
 
 ## 1. Product definition
 
@@ -312,7 +312,7 @@ Phase 0 proved sponsor-native execution on Somnia Shannon:
 
 `BinaryOrderPlaced`, `OrderFilled`, and `OrderPlaced` events were verified, and wallet collateral/position deltas agreed with the fill. Therefore `SPONSOR_NATIVE_EXECUTION_PROVEN=YES`.
 
-At the latest recorded Phase 0.5H read, the market was still Trading, unfinalized, unresolved, and non-voided with 24,731 seconds to expiry. The wallet still held 1000 raw NO, but no claim was available. Settlement and redemption remain pending natural finalization. Full lifecycle proof must not be claimed until `FOUNDATION_VALIDATION.md` records authoritative settlement and, where applicable, redemption evidence.
+The Phase 0.6 authoritative read closed this lifecycle. The market finalized and resolved without being voided; payout vector `[10000000,0]` over denominator `10000000` proved YES won. The wallet still held `1000` raw NO and `0` YES, so the owned position lost, had `0` raw claimable collateral, and required no redemption transaction. `SETTLEMENT_LOSING_PATH=PROVEN`. A winning or voided owned-position redemption broadcast and resulting collateral balance delta remain empirically untested: `WINNING_REDEMPTION_BROADCAST=UNVERIFIED`.
 
 ## 21. Monetization
 
@@ -330,7 +330,7 @@ Longer term, CUSHION may expose an API or SDK to wallets, portfolio apps, Somnia
 
 ### Hackathon MVP
 
-Prove live discovery, books, protection modeling, bounded execution, a real DreamDEX order and owned position, monitoring, settlement, and redemption. Execution is proven; settlement/redemption remain pending.
+Phase 0 proved live discovery, books, protection modeling, bounded execution, a real DreamDEX order and owned position, monitoring, and natural settlement with correct losing-position zero-claim behavior. A winning redemption broadcast remains unverified and must not be represented as empirical evidence.
 
 ### 0–3 months
 
@@ -433,11 +433,12 @@ If any document conflicts with verified deployed behavior:
 - Exact funded simulation: **PROVEN**.
 - Maximum-price enforcement and price improvement: **PROVEN**.
 - Authoritative full fill and owned position: **PROVEN**.
-- Natural finalization of the owned position: **PENDING**.
-- Winning/losing/void outcome for the owned position: **PENDING**.
-- Claim/redeem transaction and collateral delta: **PENDING**.
+- Natural finalization of the owned position: **PROVEN**.
+- Authoritative outcome and losing-position classification: **PROVEN** (YES won; owned NO lost).
+- Losing-position zero-claim behavior: **PROVEN** (`CLAIMABLE_RAW=0`; redemption not required).
+- Winning/void owned-position redemption broadcast and collateral delta: **UNVERIFIED**.
 - Phase 1: **NOT STARTED**.
 
 The current foundation gate is:
 
-`GREEN_EXECUTION_PROVEN_SETTLEMENT_PENDING`
+`GREEN_FULL_LIFECYCLE_PROVEN`

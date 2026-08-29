@@ -152,6 +152,14 @@ Pools recycle across assets, windows, and nonces, so integration must maintain a
 
 Phase 0.5C was read-only. It did not broadcast an approval or order and did not start Phase 1.
 
-### Post-approval result
+### Phase 0.6 final settlement result
+
+The exact BTC 24h market `0x...9a4f` naturally finalized on Shannon. At block `474419526`, deployed state reported status `4`, nonce `130`, pool `0xC3F0...5cc8`, expiry `1787788800`, `finalized=true`, `isResolved=true`, and `isVoided=false`. The permanent settlement record supplied payout vector `[10000000,0]` over denominator `10000000` with a `0` bps settlement fee, authoritatively proving YES won.
+
+The dedicated wallet still held `1000` raw NO and `0` YES. Official claimability logic returned no claimable outcome and the exact NO payout was `0` raw tUSDC; the contemporaneous collateral balance was `499999198` raw. Losing tokens can remain outstanding but have no payout. No redeem call, simulation, signature, or broadcast was performed merely to force a transaction proof.
+
+The applicable sponsor lifecycle is complete through natural settlement: `REDEMPTION_REQUIRED=NO`, `REDEMPTION_RESULT=NOT_APPLICABLE_POSITION_LOST`, and `FULL_LIFECYCLE=PASS_SETTLEMENT_LOSING_PATH_VERIFIED`. A winning/void redemption balance-delta path remains unverified and must not be presented as proven.
+
+### Historical post-approval result
 
 The explicitly approved transaction was broadcast exactly once: hash `0x045d0dddefac7be69166e6932a1b87752dd4f5cc69121bba9d10b7e36e1fa7fa`, block `471872954`, receipt `success`, and allowance `722000` on the approved pool. Revalidation then found a new ETH 15m `Trading` market (`0x…a3fe`) with pool `0x3124…24a2`, nonce `89`, and NO ask `0.405`; its pool-specific allowance was `0`. The fresh exact one-share BUY_NO simulation reverted, so no additional approval or order transaction was attempted. Market rollover invalidated reuse of the prior approval plan.

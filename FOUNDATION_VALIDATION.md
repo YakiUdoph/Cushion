@@ -310,3 +310,13 @@ Approval UX is `ACCEPTABLE`: a small observed pool set can be reused by address,
 ### Phase 0.5A gate
 
 **SIMULATION_GATE=YELLOW** — exact independent pre-broadcast simulation is structurally proven, produces useful deterministic revert information, and supports transport-only RPC fallback. A funded caller with the real collateral allowance/operator state is still required to prove a successful simulation and the complete balance-vs-allowance classification.
+
+## Phase 0.6 final settlement and losing-position validation
+
+At Shannon block `474419526` (chain timestamp `1788014946`), the exact owned market `0x0000000000000000000000000000000000000000000000000000000000009a4f` was read by canonical market ID. It remained bound to pool `0xC3F0Bb8cD90d3fFa6a3e4982bCD6698f27Af5cc8`, nonce `130`, and expiry `1787788800`, but its authoritative status was now `4`/Finalized with `finalized=true`, `isResolved=true`, and `isVoided=false`.
+
+The permanent BinarySettlement record matched the same pool and nonce and contained payout numerators `[10000000,0]`, denominator `10000000`, and settlement fee `0` bps. Because resolution state and the non-empty payout vector prove outcome index `0`, YES is the authoritative winner; the earlier unresolved numeric default is no longer being used as evidence.
+
+Wallet `0x7bDb8D6608e2366d24C3dF0809838B74E9a2701E` still held `0` raw YES and `1000` raw NO. Official claim rules returned no claimable outcomes, and fee-aware payout calculation returned `0` raw tUSDC for the owned NO position. The wallet's tUSDC balance was `499999198` raw (`499.999198` tUSDC). The losing outcome tokens remain outstanding but have zero redemption value; no redemption transaction is required or useful, so no calldata was constructed, simulated, signed, or broadcast.
+
+This proves the natural settlement losing path for the position created in Phase 0.5G. A winning/void redemption broadcast and collateral delta remain separately unverified, but are not applicable to this position. `FULL_LIFECYCLE=PASS_SETTLEMENT_LOSING_PATH_VERIFIED`; `FOUNDATION_GATE=GREEN_FULL_LIFECYCLE_PROVEN`. Phase 1 was not started.
