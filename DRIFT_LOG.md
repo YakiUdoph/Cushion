@@ -4,6 +4,10 @@ Record every incorrect assumption, documentation mismatch, unexpected SDK/API be
 
 Phase 0.5C corrections and discoveries:
 
+- Phase 1A began after the canonical PRD and user authorization closed Phase 0. `AGENTS.md` still carried the old Phase-0-only scope and `DESIGN.md` still carried its pre-approval gate despite an already approved frontend being present. `AGENTS.md` was updated to permit read-only Phase 1A while retaining every security/evidence rule; the existing design tokens and editorial direction were preserved.
+- The documented `@dreamdex-bot-kit/ec-core` package is a workspace package and returned npm registry 404. Phase 1A uses the published official `@somnia-chain/markets-sdk` 0.28.1 directly for market, book, and portfolio reads.
+- The SDK documents a known portfolio cost-basis gap for recycled pools. Phase 1A does not show computed historical cost/PnL from that path; WATCH displays authoritative position balance and lifecycle state only.
+
 - Phase 0.6 settlement completion: exact market `0x...9a4f` finalized and resolved to YES from authoritative payout vector `[10000000,0]` with denominator `10000000`; it was not voided and the frozen settlement fee was `0` bps. The wallet retained `1000` raw losing NO, had no claimable outcome, and its calculated payout was `0` raw tUSDC. No zero-value redemption was constructed or broadcast. This proves the losing settlement path, while a winning/void redemption and collateral delta remain separately unverified.
 
 - Phase 0.5H settlement tracking: market `0x...9a4f` remained Trading, unfinalized, unresolved, and non-voided with `24731` seconds to expiry. Wallet NO ownership remained `1000` raw and nothing was claimable. The on-chain helper's `winningOutcome=0` is an empty-vector default while unresolved, not evidence of a YES winner; gate winner display on resolved/voided state.

@@ -1,8 +1,8 @@
 # CUSHION Agent Rules
 
-## Phase 0 scope
+## Phase 1A scope
 
-Phase 0 is foundation validation only. Agents must not build or modify CUSHION product frontend or application features during this phase.
+Phase 0 is closed at `GREEN_FULL_LIFECYCLE_PROVEN`. Phase 1A permits frontend and live read-side application work only.
 
 No agent may:
 
@@ -10,7 +10,9 @@ No agent may:
 - invent sponsor capabilities;
 - bypass failed DreamDEX functionality with fake execution;
 - change the core CUSHION product concept without recording the change in `DRIFT_LOG.md`;
-- modify the approved design system during Phase 0.
+- modify the approved design system without recording the change in `DRIFT_LOG.md`;
+- broadcast approvals, orders, claims, or any other transaction during Phase 1A;
+- add a frontend private key, custodial signer, or automatic trading path.
 
 ## Security and evidence
 
