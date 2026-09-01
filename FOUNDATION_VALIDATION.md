@@ -320,3 +320,10 @@ The permanent BinarySettlement record matched the same pool and nonce and contai
 Wallet `0x7bDb8D6608e2366d24C3dF0809838B74E9a2701E` still held `0` raw YES and `1000` raw NO. Official claim rules returned no claimable outcomes, and fee-aware payout calculation returned `0` raw tUSDC for the owned NO position. The wallet's tUSDC balance was `499999198` raw (`499.999198` tUSDC). The losing outcome tokens remain outstanding but have zero redemption value; no redemption transaction is required or useful, so no calldata was constructed, simulated, signed, or broadcast.
 
 This proves the natural settlement losing path for the position created in Phase 0.5G. A winning/void redemption broadcast and collateral delta remain separately unverified, but are not applicable to this position. `FULL_LIFECYCLE=PASS_SETTLEMENT_LOSING_PATH_VERIFIED`; `FOUNDATION_GATE=GREEN_FULL_LIFECYCLE_PROVEN`. Phase 1 was not started.
+# Phase 1B application-path validation
+
+Live browser validation on 2026-08-31 connected the dedicated public Shannon test wallet through CUSHION without exposing a signer. The selected BTC/5m market `0x…f6f0` finalized while under review; authoritative state showed status `Finalized`, zero live NO depth, and an expired timestamp. No approval was requested and no order was broadcast.
+
+This exposed a pre-approval freshness gap: the UI retained its earlier quote and the approval handler had not yet re-read authoritative market lifecycle state. The Phase 1B blocker patch centralizes chain, market ID, pool, nonce, collateral, status, expiry, quote, liquidity, quantity, price bound, balance, and allowance checks for approval, simulation, and confirmation. Cached quotes time out after 30 seconds; execution requires at least 600 seconds remaining. Regression coverage verifies expiration at every write boundary, finalization, pool/nonce rollover, allowance isolation, quote timeout, empty books, and stale simulated packages.
+
+Application-level approval and order broadcast remain `UNVERIFIED`: validation stopped before every wallet transaction as required.

@@ -1,5 +1,7 @@
 # CUSHION Design System
 
+> **Approved Phase 1B visual addendum (2026-08-31):** The premium dual-theme visual-upgrade brief supersedes the earlier light-only, no-violet, no-dark-theme restrictions below. CUSHION now uses a restrained violet-to-blue-to-cyan signal system, premium light and deep-navy dark themes, atmospheric code-native backgrounds, and reduced-motion-safe ambient effects. The original editorial hierarchy, product-led composer, truthful live data, semantic state colors, and accessibility requirements remain binding.
+
 **Status:** Proposed — approval required before frontend implementation  
 **Reference:** Adapted from the attached ORYZO visual and structural reference. CUSHION borrows its discipline, editorial composition, negative space, structural hairlines, object focus, restrained containers, and deliberate rhythm. It does **not** copy ORYZO branding, imagery, wording, uppercase treatment, brown/orange palette, or dark theme.
 

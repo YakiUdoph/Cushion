@@ -1,4 +1,4 @@
-# CUSHION Phase 1A Architecture
+# CUSHION Phase 1A/1B Architecture
 
 Phase 1A is a browser read application. It contains no signing or broadcast path.
 
@@ -26,6 +26,14 @@ When visible depth is below even the Light request, all styles can truthfully co
 
 A numeric winner is ignored until status is authoritatively `Resolved` or `Finalized`; void state is separately gated. Portfolio discovery is indexer-based and may be incomplete for legacy positions.
 
-## Write boundary
+## Phase 1B connected-wallet execution
 
-There is no approval, order, simulation authorization, claim, private key, signer, or broadcast function in Phase 1A. Wallet access is limited to account discovery and Shannon network switching.
+Phase 1A remains the read foundation. Phase 1B adds one bounded write path: a connected Shannon wallet can approve the selected BinaryPool for the exact maximum collateral amount and submit a BUY_NO immediate-or-cancel order. The browser never receives, stores, or derives a private key; every write is presented to the user's EIP-1193 wallet.
+
+The execution artifact binds chain ID, caller, canonical `marketId`, pool, pool nonce, collateral, market expiry, quote fingerprint, quantity, ceiling, maximum cost, calldata, value, and gas. Immediately before confirmation the application re-reads wallet/chain, on-chain market identity and status, expiry headroom, live book, collateral balance, and pool-specific allowance. Any change invalidates the artifact. The exact order bytes are independently simulated; the same object is then handed to the wallet without mutation.
+
+Approval, simulation, and confirmation share one authoritative freshness gate. A quote is actionable for at most 30 seconds and is invalidated immediately when its market closes. CUSHION requires at least 600 seconds of market life before any write path; this deliberately reserves time for a finite approval, receipt confirmation, fresh order simulation, human review, wallet confirmation, and order inclusion. A Trading market below that threshold is labeled too close to expiry rather than safely executable. Refresh is an explicit user action: it rediscovers markets, clears the old quote/package, re-reads the replacement pool's allowance, and requires review of new values.
+
+Receipt status is necessary but not sufficient. Verification requires the pool's BUY_NO `BinaryOrderPlaced`, the matching `OrderPlaced` owner, matching taker `OrderFilled` events when present, price/cost bounds, and the connected wallet's resulting NO-token balance. A successful IOC receipt with an authoritative order but zero fill is `NO_FILL`, never active protection. Verified full and partial fills are saved as local display metadata and the live portfolio is refreshed.
+
+No agent or automated test broadcasts a transaction. Claims, redemption, server signing, private-key input, automatic execution, and mainnet writes remain outside Phase 1B.

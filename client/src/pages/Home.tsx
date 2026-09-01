@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import {
   SomniaMarkets,
   SOMNIA_TESTNET_ADDRESSES,
@@ -11,12 +11,15 @@ import {
   Check,
   ChevronDown,
   CircleAlert,
+  Moon,
   Menu,
   ShieldCheck,
+  Sun,
   Wallet,
   X,
 } from "lucide-react";
 import { useWallet } from "@/hooks/useWallet";
+import { useExecution } from "@/hooks/useExecution";
 import {
   buildAssetRegistry,
   calculateProtectionPlans,
@@ -46,12 +49,17 @@ const shortAddress = (value?: string) =>
 
 export default function Home() {
   const wallet = useWallet();
+  const [theme, setTheme] = useState<"light" | "dark">(() =>
+    document.documentElement.dataset.theme === "dark" ? "dark" : "light"
+  );
   const [menuOpen, setMenuOpen] = useState(false);
   const [markets, setMarkets] = useState<BinaryMarket[]>([]);
   const [marketState, setMarketState] = useState<LoadState>("loading");
   const [bookState, setBookState] = useState<LoadState>("loading");
   const [rpcDegraded, setRpcDegraded] = useState(false);
   const [book, setBook] = useState<BinaryOrderBook | null>(null);
+  const [quoteTimestamp, setQuoteTimestamp] = useState<number | null>(null);
+  const [refreshNotice, setRefreshNotice] = useState("");
   const [asset, setAsset] = useState("");
   const [marketId, setMarketId] = useState("");
   const [exposure, setExposure] = useState("4000");
@@ -60,6 +68,7 @@ export default function Home() {
     Awaited<ReturnType<typeof exchange.client.getPortfolio>>["positions"]
   >([]);
   const [portfolioLoading, setPortfolioLoading] = useState(false);
+  const [portfolioRefresh, setPortfolioRefresh] = useState(0);
   const registry = useMemo(() => buildAssetRegistry(markets), [markets]);
   const selectedAsset =
     registry.find(row => row.symbol === asset) ?? registry[0];
@@ -104,6 +113,7 @@ export default function Home() {
       .then(next => {
         if (active) {
           setBook(next);
+          setQuoteTimestamp(Date.now());
           setBookState(next.noAsks.length ? "ready" : "empty");
         }
       })
@@ -123,7 +133,7 @@ export default function Home() {
       .then(p => setPositions(p.positions))
       .catch(() => setPositions([]))
       .finally(() => setPortfolioLoading(false));
-  }, [wallet.address, wallet.status]);
+  }, [portfolioRefresh, wallet.address, wallet.status]);
 
   const decimals = selectedMarket?.quoteDecimals ?? 6;
   const exposureRaw = useMemo(() => {
@@ -140,19 +150,49 @@ export default function Home() {
   );
   const plan = plans.find(row => row.style === style) ?? plans[0];
   const depthCollapsed = plansCollapseAtDepth(plans);
-  const walletAction =
-    wallet.status === "WRONG_NETWORK"
-      ? { label: "Switch to Somnia", action: wallet.switchNetwork }
-      : wallet.status === "CONNECTED"
-        ? { label: "Live preview ready", action: () => undefined }
-        : {
-            label:
-              wallet.status === "CONNECTING" ? "Connecting…" : "Connect wallet",
-            action: wallet.connect,
-          };
+  const execution = useExecution({
+    wallet,
+    market: selectedMarket,
+    book,
+    plan,
+    client: exchange.client,
+    quoteTimestamp,
+    onVerified: () => setPortfolioRefresh(value => value + 1),
+  });
+  const refreshProtection = async () => {
+    setRefreshNotice("");
+    setMarketState("loading");
+    setBookState("loading");
+    setBook(null);
+    setQuoteTimestamp(null);
+    try {
+      const rows = await exchange.client.listBinaryMarkets({ operatorId: 2, limit: 200 });
+      setMarketId("");
+      setMarkets(rows);
+      setMarketState(rows.length ? "ready" : "empty");
+      setRefreshNotice("Market and quote refreshed. Review the new protection values before continuing.");
+    } catch {
+      setMarketState("error");
+      setBookState("error");
+    }
+  };
+  const executionAction = executionButton(
+    execution.status,
+    wallet,
+    execution,
+    refreshProtection
+  );
+  const toggleTheme = () => {
+    const next = theme === "light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    document.documentElement.style.colorScheme = next;
+    localStorage.setItem("cushion-theme", next);
+    setTheme(next);
+  };
 
   return (
     <main id="top" className="site-shell">
+      <AmbientBackdrop />
       <header className="site-header">
         <div className="header-inner">
           <a className="brand" href="#top">
@@ -164,6 +204,11 @@ export default function Home() {
             <a href="#under">How it works</a>
             <a href="#watch">CUSHION WATCH</a>
           </nav>
+          <button className="theme-toggle" onClick={toggleTheme} aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`} title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}>
+            <Sun className="theme-sun" size={16} />
+            <Moon className="theme-moon" size={16} />
+            <span aria-hidden="true" />
+          </button>
           <button
             className="button button-primary header-cta"
             onClick={wallet.status === "CONNECTED" ? undefined : wallet.connect}
@@ -216,9 +261,13 @@ export default function Home() {
             </p>
           </div>
           <div className="hero-field" aria-hidden="true">
+            <div className="protection-arc arc-one" />
+            <div className="protection-arc arc-two" />
             <div className="orbital">
               <ShieldCheck />
             </div>
+            <div className="orbit-point point-one" />
+            <div className="orbit-point point-two" />
           </div>
         </div>
       </section>
@@ -332,9 +381,9 @@ export default function Home() {
               <div className="preview-head">
                 <span>Your Cushion</span>
                 <i>
-                  {bookState === "ready"
+                  {bookState === "ready" && !["MARKET_CLOSED", "MARKET_STALE", "QUOTE_STALE", "TOO_CLOSE_TO_EXPIRY"].includes(execution.status)
                     ? "LIVE QUOTE"
-                    : bookState.toUpperCase()}
+                    : ["MARKET_CLOSED", "MARKET_STALE", "QUOTE_STALE", "TOO_CLOSE_TO_EXPIRY"].includes(execution.status) ? "QUOTE STALE" : bookState.toUpperCase()}
                 </i>
               </div>
               {marketState === "loading" || bookState === "loading" ? (
@@ -381,21 +430,23 @@ export default function Home() {
                     <strong>
                       {formatRaw(plan.estimatedCost, decimals)} tUSDC
                     </strong>
+                    <small>What you are estimated to spend for this position.</small>
                   </div>
                   <div className="cost-block maximum">
                     <span>Maximum authorized cost</span>
                     <strong>
                       {formatRaw(plan.maximumCost, decimals)} tUSDC
                     </strong>
-                    <small>CUSHION will not execute above your maximum.</small>
+                    <small>The most you authorize. Market prices can move, but CUSHION will not execute above this amount.</small>
                   </div>
+                  <DepthVisual book={book} decimals={decimals} />
                   <dl className="detail-list">
                     <div>
-                      <dt>Position size</dt>
+                      <dt>Executable protection position</dt>
                       <dd>{formatRaw(plan.quantity, decimals)} shares</dd>
                     </div>
                     <div>
-                      <dt>Potential conditional payout</dt>
+                      <dt>If the Event Contract NO outcome wins</dt>
                       <dd>{formatRaw(plan.grossPayout, decimals)} tUSDC</dd>
                     </div>
                     <div>
@@ -421,17 +472,16 @@ export default function Home() {
               )}
               <button
                 className="button button-primary preview-action"
-                onClick={walletAction.action}
-                disabled={
-                  wallet.status === "CONNECTING" ||
-                  wallet.status === "CONNECTED"
-                }
+                onClick={executionAction.action}
+                disabled={executionAction.disabled}
               >
-                {walletAction.label}
+                {executionAction.label}
               </button>
+              {refreshNotice && <p className="read-only-note">{refreshNotice}</p>}
+              <ExecutionState execution={execution} decimals={decimals} />
               <p className="read-only-note">
-                This preview never requests an approval, signature, order, or
-                claim.
+                Every transaction requires confirmation in your connected
+                wallet. CUSHION never holds your keys.
               </p>
             </aside>
           </div>
@@ -459,6 +509,7 @@ export default function Home() {
                     onClick={() => setStyle(row.style)}
                   >
                     <span>
+                      <span className="plan-glyph" aria-hidden="true"><ShieldCheck size={16} /></span>
                       {row.style === "balanced" && (
                         <i>
                           <Check size={12} /> Recommended
@@ -603,6 +654,10 @@ export default function Home() {
                         </dd>
                       </div>
                     </dl>
+                    <div className="watch-timeline" aria-label={`${state.replace("_", " ")} lifecycle`}>
+                      <span className="watch-node active" /><i /><span className="watch-node" /><i /><span className="watch-node" />
+                      <small>Now</small><small>Expiry</small><small>Resolution</small>
+                    </div>
                   </article>
                 );
               })}
@@ -618,14 +673,44 @@ export default function Home() {
           </div>
           <p>
             Experimental testnet market preview. Conditional payouts are not
-            insurance or guaranteed protection. Transaction execution is not
-            available.
+            insurance or guaranteed protection. Every transaction requires
+            confirmation in your connected wallet.
           </p>
         </div>
       </footer>
     </main>
   );
 }
+
+function AmbientBackdrop() {
+  return (
+    <div className="ambient-backdrop" aria-hidden="true">
+      <div className="ambient-glow glow-violet" />
+      <div className="ambient-glow glow-cyan" />
+      <div className="particle-field" />
+      <div className="grid-wave" />
+      <div className="noise-overlay" />
+    </div>
+  );
+}
+
+function DepthVisual({ book, decimals }: { book: BinaryOrderBook | null; decimals: number }) {
+  const levels = book?.noAsks.slice(0, 5) ?? [];
+  if (!levels.length) return null;
+  const max = levels.reduce((value, level) => level.quantity > value ? level.quantity : value, 0n);
+  if (max === 0n) return null;
+  return (
+    <div className="depth-visual" aria-label="Live NO liquidity by price level">
+      <div><span>Live NO liquidity</span><small>{levels.length} executable levels</small></div>
+      <div className="depth-bars">
+        {levels.map(level => (
+          <span key={level.price.toString()} style={{ "--depth": `${Number((level.quantity * 100n) / max)}%` } as CSSProperties} title={`${formatRaw(level.quantity, decimals)} shares at ${formatRaw(level.price, decimals)}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Skeleton() {
   return (
     <div className="skeleton-stack" aria-label="Loading live data">
@@ -641,6 +726,75 @@ function Empty({ title, body }: { title: string; body: string }) {
       <CircleAlert />
       <strong>{title}</strong>
       <p>{body}</p>
+    </div>
+  );
+}
+
+type ExecutionController = ReturnType<typeof useExecution>;
+type WalletController = ReturnType<typeof useWallet>;
+
+function executionButton(
+  status: ExecutionController["status"],
+  wallet: WalletController,
+  execution: ExecutionController,
+  refreshProtection: () => Promise<void>
+) {
+  if (wallet.status === "WRONG_NETWORK") return { label: "Switch to Somnia", action: wallet.switchNetwork, disabled: false };
+  if (wallet.status !== "CONNECTED") return { label: wallet.status === "CONNECTING" ? "Connecting…" : "Connect wallet", action: wallet.connect, disabled: wallet.status === "CONNECTING" };
+  switch (status) {
+    case "APPROVAL_REQUIRED": return { label: "Enable CUSHION", action: execution.enable, disabled: false };
+    case "APPROVAL_SIMULATING": return { label: "Checking approval…", action: execution.enable, disabled: true };
+    case "APPROVAL_WAITING_FOR_WALLET": return { label: "Confirm approval in wallet", action: execution.enable, disabled: true };
+    case "APPROVAL_SUBMITTED":
+    case "APPROVAL_CONFIRMING": return { label: "Confirming approval…", action: execution.enable, disabled: true };
+    case "APPROVAL_FAILED": return { label: "Retry enabling CUSHION", action: execution.enable, disabled: false };
+    case "READY_FOR_SIMULATION": return { label: "Simulate & review", action: execution.simulate, disabled: false };
+    case "SIMULATING": return { label: "Simulating exact order…", action: execution.simulate, disabled: true };
+    case "SIMULATION_FAILED": return { label: "Review protection", action: execution.simulate, disabled: false };
+    case "SIMULATION_PASSED": return { label: "Confirm Cushion", action: execution.confirm, disabled: false };
+    case "WAITING_FOR_WALLET": return { label: "Confirm in your wallet", action: execution.confirm, disabled: true };
+    case "TRANSACTION_SUBMITTED":
+    case "VERIFYING_DREAMDEX": return { label: "Verifying with DreamDEX…", action: execution.confirm, disabled: true };
+    case "MARKET_CLOSED": return { label: "Refresh protection", action: refreshProtection, disabled: false };
+    case "MARKET_STALE": return { label: "Refresh protection", action: refreshProtection, disabled: false };
+    case "QUOTE_STALE": return { label: "Refresh protection", action: refreshProtection, disabled: false };
+    case "TOO_CLOSE_TO_EXPIRY": return { label: "Choose another window", action: refreshProtection, disabled: false };
+    case "NO_LIQUIDITY": return { label: "Refresh protection", action: refreshProtection, disabled: false };
+    case "PRICE_MOVED": return { label: "Refresh quote", action: refreshProtection, disabled: false };
+    case "FULL_FILL": return { label: "Cushion active", action: execution.confirm, disabled: true };
+    case "PARTIAL_FILL": return { label: "Partially filled", action: execution.confirm, disabled: true };
+    case "NO_FILL": return { label: "Protection wasn’t opened", action: execution.confirm, disabled: true };
+    case "INSUFFICIENT_COLLATERAL": return { label: "Insufficient tUSDC", action: execution.refresh, disabled: true };
+    case "TRANSACTION_FAILED": return { label: "Transaction failed", action: refreshProtection, disabled: false };
+    default: return { label: "Checking readiness…", action: execution.refresh, disabled: true };
+  }
+}
+
+function ExecutionState({ execution, decimals }: { execution: ExecutionController; decimals: number }) {
+  const copy: Partial<Record<ExecutionController["status"], string>> = {
+    APPROVAL_REQUIRED: "Authorize the relevant DreamDEX market pool to use the required amount of collateral.",
+    SIMULATION_PASSED: "Ready to execute. The exact bounded order passed simulation against your current wallet state.",
+    PRICE_MOVED: "The market moved while you were reviewing. Your previous execution package was invalidated.",
+    WAITING_FOR_WALLET: "Confirm the exact simulated order in your wallet.",
+    TRANSACTION_SUBMITTED: "Protection submitted. Waiting for a Shannon receipt.",
+    VERIFYING_DREAMDEX: "Receipt received. Verifying fill events and the resulting owned position.",
+    NO_FILL: "Your maximum price was respected. No eligible liquidity was available within it.",
+    TRANSACTION_FAILED: "The transaction did not produce a verified Cushion position.",
+    INSUFFICIENT_COLLATERAL: "Your wallet does not hold enough collateral for the maximum authorized cost.",
+    MARKET_CLOSED: "Protection window closed. This market expired while you were reviewing it. Refresh to use the latest available protection window.",
+    MARKET_STALE: "The selected market changed and the previous execution preview was invalidated.",
+    QUOTE_STALE: "This quote is no longer current. Refresh protection before continuing.",
+    TOO_CLOSE_TO_EXPIRY: "This market is Trading but too close to expiry for a safe approval and execution flow.",
+    NO_LIQUIDITY: "The selected plan is no longer executable within your approved maximum price.",
+  };
+  return (
+    <div className="execution-state" aria-live="polite">
+      <span>{execution.status.replaceAll("_", " ")}</span>
+      {copy[execution.status] && <p>{copy[execution.status]}</p>}
+      {execution.snapshot && <p>Wallet collateral: {formatRaw(execution.snapshot.balance, decimals)} tUSDC · Pool allowance: {formatRaw(execution.snapshot.allowance, decimals)} tUSDC</p>}
+      {execution.result && <dl><div><dt>Requested</dt><dd>{formatRaw(execution.result.requestedQuantity, decimals)} shares</dd></div><div><dt>Filled</dt><dd>{formatRaw(execution.result.filledQuantity, decimals)} shares</dd></div><div><dt>Actual spend</dt><dd>{formatRaw(execution.result.actualSpend, decimals)} tUSDC</dd></div><div><dt>Unfilled</dt><dd>{formatRaw(execution.result.unfilledQuantity, decimals)} shares</dd></div></dl>}
+      {execution.transactionHash && <a href={`https://shannon-explorer.somnia.network/tx/${execution.transactionHash}`} target="_blank" rel="noreferrer">View transaction</a>}
+      {execution.failure && <details><summary>Technical details</summary><code>{String(execution.failure)}</code></details>}
     </div>
   );
 }

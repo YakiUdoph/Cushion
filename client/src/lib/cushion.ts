@@ -22,7 +22,7 @@ type RpcEnvelope<T> = {
   error?: { code: number; message: string; data?: unknown };
 };
 
-async function rpcCall<T>(
+export async function rpcCall<T>(
   endpoint: string,
   method: string,
   params: unknown[],
@@ -148,6 +148,7 @@ export type ProtectionPlan = {
   quantity: bigint;
   estimatedCost: bigint;
   maximumCost: bigint;
+  maximumNoPrice: bigint;
   grossPayout: bigint;
   netGain: bigint;
   availableDepth: bigint;
@@ -195,6 +196,7 @@ export function calculateProtectionPlans(
         quantity: filled,
         estimatedCost: cost,
         maximumCost,
+        maximumNoPrice: worstPrice,
         grossPayout: filled,
         netGain: filled > cost ? filled - cost : 0n,
         availableDepth: depth,
